@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bellezas - Catálogo Premium</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2 family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-crema: #F7F4E9;
@@ -78,7 +78,7 @@
         .hidden { display: none !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* RESTO DE ESTILOS (MANTENIDOS E INTACTOS) */
+        /* RESTO DE ESTILOS */
         .admin-header, .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 10px; color: var(--verde); }
         .admin-card, .cart-card { background-color: var(--white); padding: 15px; border-radius: 10px; border: 1px solid var(--gold); margin-bottom: 20px; }
         .admin-card h3, .cart-card h3 { font-size: 14px; margin-bottom: 12px; border-left: 3px solid var(--gold); padding-left: 8px; }
@@ -115,6 +115,7 @@
         .talla-btn { padding: 8px; border: 1px solid var(--gold); background: var(--bg-crema); border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px; }
         .talla-btn.selected { background: var(--gold); color: var(--white); }
         .empty-msg { grid-column: span 2; text-align: center; padding: 40px 15px; color: var(--gold-dark); font-style: italic; font-size: 13px; }
+        .loading-overlay { font-size: 14px; color: var(--gold-dark); text-align: center; padding: 20px; font-style: italic; }
     </style>
 </head>
 <body>
@@ -130,7 +131,8 @@
 
     <main class="app-container">
         <section id="vista-cliente">
-            <div id="subvista-menu-categorias" class="categories-menu-vertical"></div>
+            <div id="loading-categorias" class="loading-overlay">Sincronizando con la nube...</div>
+            <div id="subvista-menu-categorias" class="categories-menu-vertical hidden"></div>
 
             <div id="subvista-productos" class="hidden">
                 <div class="back-header">
@@ -244,15 +246,65 @@
         </div>
     </nav>
 
-    <script>
-        let db = JSON.parse(localStorage.getItem('bellezas_pro_db')) || {
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Configuración oficial de tu aplicación en Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD8_-NFb0q903-wOP2xnr_faqka-G8Lo6k",
+            authDomain: "bellezas-fa52a.firebaseapp.com",
+            databaseURL: "https://bellezas-fa52a-default-rtdb.firebaseio.com",
+            projectId: "bellezas-fa52a",
+            storageBucket: "bellezas-fa52a.firebasestorage.app",
+            messagingSenderId: "1074680332863",
+            appId: "1:1074680332863:web:4c85d487fc4c59a01c2e8a"
+        };
+
+        // Inicializar servicios cloud
+        const app = initializeApp(firebaseConfig);
+        const firestoreDb = getFirestore(app);
+
+        // Documento unificado dentro de la colección 'tienda'
+        const docRef = doc(firestoreDb, "tienda", "config_bellezas");
+
+        // Estado global del catálogo sincronizado en la nube
+        let db = {
             clave: "1234", tasa: 45.50, telefono: "584124111357", categorias: ["Ropa", "Bolsos"], productos: []
         };
         let carrito = [], categoriaActiva = null, idCatEditando = null, idProdEditando = null, productoTemporalParaCarrito = null, tallaTemporalSeleccionada = "Única";
 
-        function sincronizarMemoria() { localStorage.setItem('bellezas_pro_db', JSON.stringify(db)); renderizarTodo(); }
+        // Función central para actualizar Firestore de forma transparente
+        async function guardarEnNube() {
+            try {
+                await setDoc(docRef, db);
+            } catch (error) {
+                console.error("Error al actualizar la base de datos cloud: ", error);
+                alert("❌ Error de red: No se pudo guardar en la nube.");
+            }
+        }
+
+        // Suscripción en vivo (Real-time tracking) de cambios en Firestore
+        onSnapshot(docRef, (docSnap) => {
+            if (docSnap.exists()) {
+                db = docSnap.data();
+                if (!db.categorias) db.categorias = [];
+                if (!db.productos) db.productos = [];
+            } else {
+                // Generar estructura por defecto en la nube si está vacío
+                guardarEnNube();
+            }
+            // Retirar pantalla de carga e inicializar renderizadores
+            document.getElementById('loading-categorias').classList.add('hidden');
+            document.getElementById('subvista-menu-categorias').classList.remove('hidden');
+            renderizarTodo();
+        }, (error) => {
+            console.error("Error de sincronización reactiva en Firestore: ", error);
+        });
+
+        // --- ENLACE AL ENTORNO WINDOW (Para compatibilidad con tus eventos inline del HTML) ---
         
-        function mostrarVista(vista) {
+        window.mostrarVista = function(vista) {
             document.getElementById('vista-cliente').classList.add('hidden');
             document.getElementById('vista-carrito').classList.add('hidden');
             document.getElementById('vista-admin').classList.add('hidden');
@@ -271,7 +323,7 @@
             }
         }
 
-        function seleccionarCategoriaNavegacion(catName) {
+        window.seleccionarCategoriaNavegacion = function(catName) {
             categoriaActiva = catName;
             document.getElementById('texto-categoria-actual').innerText = catName;
             document.getElementById('subvista-menu-categorias').classList.add('hidden');
@@ -280,42 +332,43 @@
             filtrarProductos();
         }
 
-        function regresarAlMenuCategorias() {
+        window.regresarAlMenuCategorias = function() {
             categoriaActiva = null;
             document.getElementById('subvista-productos').classList.add('hidden');
             document.getElementById('subvista-menu-categorias').classList.remove('hidden');
         }
 
-        function solicitarAccesoAdmin() {
+        window.solicitarAccesoAdmin = function() {
             let pass = prompt("Clave de Acceso Administrativo:");
             if(pass === null) return;
             if(pass === db.clave) { mostrarVista('admin'); } else { alert("❌ Clave Incorrecta."); }
         }
 
-        function guardarConfigAjustes() {
+        window.guardarConfigAjustes = function() {
             const tel = document.getElementById('tienda-telefono').value.trim();
             const tasa = parseFloat(document.getElementById('tasa-dolar-input').value);
             const clav = document.getElementById('nueva-clave').value.trim();
             if(tel !== "") db.telefono = tel;
             if(!isNaN(tasa) && tasa > 0) db.tasa = tasa;
             if(clav !== "") { db.clave = clav; alert("Clave actualizada."); document.getElementById('nueva-clave').value = ""; }
-            sincronizarMemoria();
+            guardarEnNube();
         }
 
-        function procesarCategoria() {
+        window.procesarCategoria = function() {
             const input = document.getElementById('nueva-categoria'); const val = input.value.trim(); if(val === "") return;
             if(idCatEditando !== null) {
                 let viejo = db.categorias[idCatEditando];
                 db.productos.forEach(p => { if(p.categoria === viejo) p.categoria = val; });
                 db.categorias[idCatEditando] = val; cancelarEdicionCat();
             } else { if(!db.categorias.includes(val)) db.categorias.push(val); }
-            input.value = ""; sincronizarMemoria();
+            input.value = ""; guardarEnNube();
         }
-        function activarEditarCat(i) { idCatEditando = i; document.getElementById('titulo-form-cat').innerText = "Editar Categoría"; document.getElementById('nueva-categoria').value = db.categorias[i]; document.getElementById('btn-guardar-cat').innerText = "Actualizar"; document.getElementById('btn-cancelar-cat').classList.remove('hidden'); }
-        function cancelarEdicionCat() { idCatEditando = null; document.getElementById('titulo-form-cat').innerText = "Crear Nueva Categoría"; document.getElementById('nueva-categoria').value = ""; document.getElementById('btn-guardar-cat').innerText = "Añadir"; document.getElementById('btn-cancelar-cat').classList.add('hidden'); }
-        function eliminarCategoria(i) { if(confirm(`¿Seguro deseas eliminar "${db.categorias[i]}"?`)) { db.categorias.splice(i, 1); sincronizarMemoria(); } }
 
-        function procesarProducto() {
+        window.activarEditarCat = function(i) { idCatEditando = i; document.getElementById('titulo-form-cat').innerText = "Editar Categoría"; document.getElementById('nueva-categoria').value = db.categorias[i]; document.getElementById('btn-guardar-cat').innerText = "Actualizar"; document.getElementById('btn-cancelar-cat').classList.remove('hidden'); }
+        window.cancelarEdicionCat = function() { idCatEditando = null; document.getElementById('titulo-form-cat').innerText = "Crear Nueva Categoría"; document.getElementById('nueva-categoria').value = ""; document.getElementById('btn-guardar-cat').innerText = "Añadir"; document.getElementById('btn-cancelar-cat').classList.add('hidden'); }
+        window.eliminarCategoria = function(i) { if(confirm(`¿Seguro deseas eliminar "${db.categorias[i]}"?`)) { db.categorias.splice(i, 1); guardarEnNube(); } }
+
+        window.procesarProducto = function() {
             const cat = document.getElementById('prod-categoria').value; const nom = document.getElementById('prod-nombre').value.trim();
             const usd = parseFloat(document.getElementById('prod-precio-usd').value); const foto = document.getElementById('prod-foto').value.trim();
             if(nom === "" || isNaN(usd) || usd <= 0) return alert("Completa los datos correctamente.");
@@ -323,27 +376,31 @@
                 let idx = db.productos.findIndex(p => p.id === idProdEditando); if(idx !== -1) db.productos[idx] = { id: idProdEditando, categoria: cat, nombre: nom, precioUsd: usd, foto };
                 cancelarEdicionProd(); alert("✨ Artículo editado.");
             } else { db.productos.push({ id: Date.now(), categoria: cat, nombre: nom, precioUsd: usd, foto }); alert("🎉 Artículo publicado."); }
-            document.getElementById('prod-nombre').value = ""; document.getElementById('prod-precio-usd').value = ""; document.getElementById('prod-foto').value = ""; sincronizarMemoria();
+            document.getElementById('prod-nombre').value = ""; document.getElementById('prod-precio-usd').value = ""; document.getElementById('prod-foto').value = ""; guardarEnNube();
         }
-        function activarEditarProd(id) {
+
+        window.activarEditarProd = function(id) {
             idProdEditando = id; let p = db.productos.find(x => x.id === id); if(!p) return;
             document.getElementById('titulo-form-prod').innerText = "Editar Producto Seleccionado";
             document.getElementById('prod-categoria').value = p.categoria; document.getElementById('prod-nombre').value = p.nombre;
             document.getElementById('prod-precio-usd').value = p.precioUsd; document.getElementById('prod-foto').value = p.foto;
             document.getElementById('btn-guardar-prod').innerText = "Guardar Cambios"; document.getElementById('btn-cancelar-prod').classList.remove('hidden');
         }
-        function cancelarEdicionProd() { idProdEditando = null; document.getElementById('titulo-form-prod').innerText = "Subir Nuevo Producto"; document.getElementById('prod-nombre').value = ""; document.getElementById('prod-precio-usd').value = ""; document.getElementById('prod-foto').value = ""; document.getElementById('btn-guardar-prod').innerText = "Publicar Artículo"; document.getElementById('btn-cancelar-prod').classList.add('hidden'); }
-        function eliminarProducto(id) { if(confirm("¿Seguro deseas borrar este producto?")) { db.productos = db.productos.filter(p => p.id !== id); carrito = carrito.filter(c => c.id !== id); sincronizarMemoria(); } }
 
-        function abrirModalTalla(id) { productoTemporalParaCarrito = db.productos.find(p => p.id === id); tallaTemporalSeleccionada = "Única"; const btns = document.querySelectorAll('.talla-btn'); btns.forEach(b => b.classList.remove('selected')); btns[0].classList.add('selected'); document.getElementById('modal-talla').classList.remove('hidden'); }
-        function seleccionarTallaNodo(el, t) { const btns = document.querySelectorAll('.talla-btn'); btns.forEach(b => b.classList.remove('selected')); el.classList.add('selected'); tallaTemporalSeleccionada = t; }
-        function confirmarAgregarAlCarrito() {
+        window.cancelarEdicionProd = function() { idProdEditando = null; document.getElementById('titulo-form-prod').innerText = "Subir Nuevo Producto"; document.getElementById('prod-nombre').value = ""; document.getElementById('prod-precio-usd').value = ""; document.getElementById('prod-foto').value = ""; document.getElementById('btn-guardar-prod').innerText = "Publicar Artículo"; document.getElementById('btn-cancelar-prod').classList.add('hidden'); }
+        window.eliminarProducto = function(id) { if(confirm("¿Seguro deseas borrar este producto?")) { db.productos = db.productos.filter(p => p.id !== id); carrito = carrito.filter(c => c.id !== id); guardarEnNube(); } }
+
+        window.abrirModalTalla = function(id) { productoTemporalParaCarrito = db.productos.find(p => p.id === id); tallaTemporalSeleccionada = "Única"; const btns = document.querySelectorAll('.talla-btn'); btns.forEach(b => b.classList.remove('selected')); btns[0].classList.add('selected'); document.getElementById('modal-talla').classList.remove('hidden'); }
+        window.seleccionarTallaNodo = function(el, t) { const btns = document.querySelectorAll('.talla-btn'); btns.forEach(b => b.classList.remove('selected')); el.classList.add('selected'); tallaTemporalSeleccionada = t; }
+        
+        window.confirmarAgregarAlCarrito = function() {
             if(!productoTemporalParaCarrito) return;
             let item = carrito.find(x => x.id === productoTemporalParaCarrito.id && x.talla === tallaTemporalSeleccionada);
             if(item) { item.cantidad++; } else { carrito.push({ id: productoTemporalParaCarrito.id, nombre: productoTemporalParaCarrito.nombre, precioUsd: productoTemporalParaCarrito.precioUsd, talla: tallaTemporalSeleccionada, cantidad: 1, foto: productoTemporalParaCarrito.foto }); }
             document.getElementById('modal-talla').classList.add('hidden'); productoTemporalParaCarrito = null; actualizarInterfazCarrito();
         }
-        function alterarCantidadCarro(idx, cambio) { carrito[idx].cantidad += cambio; if(carrito[idx].cantidad <= 0) carrito.splice(idx, 1); actualizarInterfazCarrito(); }
+
+        window.alterarCantidadCarro = function(idx, cambio) { carrito[idx].cantidad += cambio; if(carrito[idx].cantidad <= 0) carrito.splice(idx, 1); actualizarInterfazCarrito(); }
 
         function actualizarInterfazCarrito() {
             document.getElementById('badge-cart-count').innerText = carrito.reduce((a, b) => a + b.cantidad, 0);
@@ -359,7 +416,7 @@
             if(categoriaActiva) filtrarProductos();
         }
 
-        function enviarPedidoWhatsApp() {
+        window.enviarPedidoWhatsApp = function() {
             if(carrito.length === 0) return alert("Tu bolsa de compras está vacía.");
             let m = `✨ *NUEVO PEDIDO - BELLEZAS* ✨\n\nHola, me gustaría comprar los siguientes artículos:\n--------------------------------\n`;
             let tot = 0; carrito.forEach(x => { let sub = x.precioUsd * x.cantidad; tot += sub; m += `🛍️ *${x.nombre}*\n   Talla: ${x.talla} | Cant: ${x.cantidad}\n   Subtotal: $${sub.toFixed(2)}\n\n`; });
@@ -367,7 +424,7 @@
             window.open(`https://wa.me/${db.telefono}?text=${encodeURIComponent(m)}`, '_blank');
         }
 
-        function filtrarProductos() {
+        window.filtrarProductos = function() {
             if (!categoriaActiva) return;
             const bus = document.getElementById('search-input').value.toLowerCase();
             const cont = document.getElementById('products-container'); cont.innerHTML = "";
@@ -384,7 +441,6 @@
         }
 
         function renderizarTodo() {
-            // Renderizar el Menú Principal de Categorías Lujosas
             const menuCont = document.getElementById('subvista-menu-categorias'); menuCont.innerHTML = "";
             if (db.categorias.length === 0) {
                 menuCont.innerHTML = `<div class="empty-msg">Aún no hay categorías creadas. Ve al panel administrativo para añadir la primera.</div>`;
@@ -394,7 +450,6 @@
                 });
             }
 
-            // Sincronizar campos de administración
             document.getElementById('tienda-telefono').value = db.telefono;
             document.getElementById('tasa-dolar-input').value = db.tasa;
             
@@ -409,8 +464,6 @@
 
             if (categoriaActiva) filtrarProductos();
         }
-
-        renderizarTodo();
     </script>
 </body>
 </html>
