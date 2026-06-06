@@ -65,14 +65,14 @@
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; animation: fadeIn 0.4s ease; }
         .product-card { background-color: var(--white); border-radius: 12px; overflow: hidden; border: 1px solid var(--gray-light); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.02); }
         
-        /* CONTENEDOR DEL CARRUSEL DE IMÁGENES */
+        /* MEJORA: CONTENEDOR DEL CARRUSEL DE IMÁGENES */
         .prod-img-box { position: relative; width: 100%; height: 160px; overflow: hidden; background-color: var(--gray-light); display: flex; align-items: center; justify-content: center; }
         .carousel-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
         .carousel-track::-webkit-scrollbar { display: none; }
         .carousel-slide { min-width: 100%; height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; }
         .carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
         
-        /* PUNTOS INDICADORES DEL CARRUSEL */
+        /* MEJORA: PUNTOS INDICADORES DEL CARRUSEL */
         .carousel-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; pointer-events: none; }
         .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; }
         .dot.active { background: var(--gold); width: 12px; border-radius: 3px; transition: all 0.2s; }
@@ -95,7 +95,7 @@
         .admin-card h3, .cart-card h3 { font-size: 14px; margin-bottom: 12px; border-left: 3px solid var(--gold); padding-left: 8px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; color: var(--verde); }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px; font-size: 14px; background-color: var(--bg-crema); outline: none; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px; font-size: 14px; background-color: var(--bg-crema); outline: none; }
         .form-group-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .form-group-row input { flex: 1; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px; background-color: var(--bg-crema); outline: none; }
         .btn-gold { background-color: var(--gold); color: var(--white); border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; }
@@ -129,7 +129,7 @@
         .empty-msg { grid-column: span 2; text-align: center; padding: 40px 15px; color: var(--gold-dark); font-style: italic; font-size: 13px; }
         .loading-overlay { font-size: 14px; color: var(--gold-dark); text-align: center; padding: 20px; font-style: italic; }
 
-        /* MODAL DE FOTO AMPLIADA */
+        /* MEJORA: MODAL DE FOTO AMPLIADA */
         .modal-zoom { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 10px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-zoom.active { opacity: 1; pointer-events: auto; }
         .modal-zoom-content { max-width: 100%; max-height: 85vh; border-radius: 8px; object-fit: contain; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; }
@@ -190,7 +190,7 @@
             <div class="admin-card">
                 <h3>Configuración General</h3>
                 <div class="form-group">
-                    <label>Número de WhatsApp Destinatario:</label>
+                    <label>Número de WhatsApp Destinatario (Ej: 58412111357):</label>
                     <input type="text" id="tienda-telefono" onchange="guardarConfigAjustes()">
                 </div>
                 <div class="form-group-row" style="margin-bottom:0;">
@@ -213,16 +213,6 @@
                 </div>
                 <ul class="admin-list" id="lista-categorias-admin" style="margin-top:15px;"></ul>
             </div>
-            
-            <div class="admin-card" style="border: 1px dashed var(--gold); background-color: #FFFDF7;">
-                <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Convertidor Masivo de Fotos</h3>
-                <div class="form-group">
-                    <label>Pega aquí los links que copiaste juntos (Uno abajo del otro):</label>
-                    <textarea id="conversor-links-area" rows="3" placeholder="http://link1.jpg&#10;http://link2.jpg" style="resize: none;"></textarea>
-                </div>
-                <button class="btn-gold w-100" style="background-color: var(--verde);" onclick="convertirLinksMasivos()">Juntar enlaces con comas</button>
-            </div>
-
             <div class="admin-card">
                 <h3 id="titulo-form-prod">Subir Nuevo Producto</h3>
                 <div class="form-group">
@@ -238,7 +228,7 @@
                     <input type="number" id="prod-precio-usd" step="0.01" placeholder="0.00">
                 </div>
                 <div class="form-group">
-                    <label>Enlace URL de la Foto (Soportará el resultado del convertidor):</label>
+                    <label>Enlace URL de la Foto (Soporta hasta 3 links separados por comas):</label>
                     <input type="text" id="prod-foto" placeholder="link1.jpg, link2.jpg, link3.jpg">
                 </div>
                 <button class="btn-gold w-100" id="btn-guardar-prod" onclick="procesarProducto()">Publicar Artículo</button>
@@ -282,7 +272,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         // Configuración oficial de tu aplicación en Firebase
         const firebaseConfig = {
@@ -295,43 +285,42 @@
             appId: "1:1074680332863:web:4c85d487fc4c59a01c2e8a"
         };
 
-        // Inicializar servicios cloud
+        // Inicializar Realtime Database de forma limpia
         const app = initializeApp(firebaseConfig);
-        const firestoreDb = getFirestore(app);
+        const realtimeDb = getDatabase(app);
+        const dbRef = ref(realtimeDb, "config_bellezas");
 
-        // Documento unificado dentro de la colección 'tienda'
-        const docRef = doc(firestoreDb, "tienda", "config_bellezas");
-
-        // Estado global del catálogo sincronizado en la nube
+        // Estado global del catálogo
         let db = {
             clave: "1234", tasa: 45.50, telefono: "584124111357", categorias: ["Ropa", "Bolsos"], productos: []
         };
         let carrito = [], categoriaActiva = null, idCatEditando = null, idProdEditando = null, productoTemporalParaCarrito = null, tallaTemporalSeleccionada = "Única";
 
-        // Función central para actualizar Firestore de forma transparente
+        // Función corregida para guardar directamente en tu Realtime Database
         async function guardarEnNube() {
             try {
-                await setDoc(docRef, db);
+                await set(dbRef, db);
             } catch (error) {
-                console.error("Error al actualizar la base de datos cloud: ", error);
+                console.error("Error al guardar en Realtime Database: ", error);
                 alert("❌ Error de red: No se pudo guardar en la nube.");
             }
         }
 
-        // Suscripción en vivo (Real-time tracking) de cambios en Firestore
-        onSnapshot(docRef, (docSnap) => {
-            if (docSnap.exists()) {
-                db = docSnap.data();
+        // Conexión en vivo con Realtime Database para recuperar lo que subiste temprano de inmediato
+        onValue(dbRef, (snapshot) => {
+            if (snapshot.exists()) {
+                db = snapshot.val();
                 if (!db.categorias) db.categorias = [];
                 if (!db.productos) db.productos = [];
             } else {
                 guardarEnNube();
             }
+            // Retirar pantalla de carga e inicializar renderizadores
             document.getElementById('loading-categorias').classList.add('hidden');
             document.getElementById('subvista-menu-categorias').classList.remove('hidden');
             renderizarTodo();
         }, (error) => {
-            console.error("Error de sincronización reactiva en Firestore: ", error);
+            console.error("Error de sincronización reactiva: ", error);
         });
 
         // --- ENLACE AL ENTORNO WINDOW ---
@@ -353,19 +342,6 @@
             } else if(vista === 'admin') { 
                 document.getElementById('vista-admin').classList.remove('hidden'); 
             }
-        }
-
-        window.convertirLinksMasivos = function() {
-            const area = document.getElementById('conversor-links-area');
-            const texto = area.value.trim();
-            if(texto === "") return alert("Por favor pega enlaces válidos primero.");
-            
-            // Separa por saltos de línea, remueve espacios en blanco vacíos y une con comas
-            const formateado = texto.split('\n').map(link => link.trim()).filter(link => link !== "").join(', ');
-            
-            document.getElementById('prod-foto').value = formateado;
-            area.value = ""; // Limpia el recuadro para el próximo uso
-            alert("✨ Enlaces combinados e insertados en el campo de la Foto.");
         }
 
         window.seleccionarCategoriaNavegacion = function(catName) {
