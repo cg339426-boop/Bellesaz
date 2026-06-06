@@ -65,14 +65,14 @@
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; animation: fadeIn 0.4s ease; }
         .product-card { background-color: var(--white); border-radius: 12px; overflow: hidden; border: 1px solid var(--gray-light); display: flex; flex-direction: column; box-shadow: 0 4px 8px rgba(0,0,0,0.02); }
         
-        /* MEJORA: CONTENEDOR DEL CARRUSEL DE IMÁGENES */
+        /* CONTENEDOR DEL CARRUSEL DE IMÁGENES */
         .prod-img-box { position: relative; width: 100%; height: 160px; overflow: hidden; background-color: var(--gray-light); display: flex; align-items: center; justify-content: center; }
         .carousel-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
-        .carousel-track::-webkit-scrollbar { display: none; } /* Oculta barra de scroll en móviles */
+        .carousel-track::-webkit-scrollbar { display: none; }
         .carousel-slide { min-width: 100%; height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; }
         .carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
         
-        /* MEJORA: PUNTOS INDICADORES DEL CARRUSEL */
+        /* PUNTOS INDICADORES DEL CARRUSEL */
         .carousel-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; pointer-events: none; }
         .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; }
         .dot.active { background: var(--gold); width: 12px; border-radius: 3px; transition: all 0.2s; }
@@ -95,7 +95,7 @@
         .admin-card h3, .cart-card h3 { font-size: 14px; margin-bottom: 12px; border-left: 3px solid var(--gold); padding-left: 8px; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 11px; font-weight: 600; margin-bottom: 4px; color: var(--verde); }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px; font-size: 14px; background-color: var(--bg-crema); outline: none; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px; font-size: 14px; background-color: var(--bg-crema); outline: none; }
         .form-group-row { display: flex; gap: 10px; margin-bottom: 12px; }
         .form-group-row input { flex: 1; padding: 10px; border: 1px solid var(--gray-light); border-radius: 6px; background-color: var(--bg-crema); outline: none; }
         .btn-gold { background-color: var(--gold); color: var(--white); border: none; padding: 10px 15px; border-radius: 6px; font-weight: 600; font-size: 13px; cursor: pointer; }
@@ -129,7 +129,7 @@
         .empty-msg { grid-column: span 2; text-align: center; padding: 40px 15px; color: var(--gold-dark); font-style: italic; font-size: 13px; }
         .loading-overlay { font-size: 14px; color: var(--gold-dark); text-align: center; padding: 20px; font-style: italic; }
 
-        /* MEJORA: MODAL DE FOTO AMPLIADA (PANTALLA COMPLETA) */
+        /* MODAL DE FOTO AMPLIADA */
         .modal-zoom { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 10px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-zoom.active { opacity: 1; pointer-events: auto; }
         .modal-zoom-content { max-width: 100%; max-height: 85vh; border-radius: 8px; object-fit: contain; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform: scale(0.9); transition: transform 0.3s ease; }
@@ -190,7 +190,7 @@
             <div class="admin-card">
                 <h3>Configuración General</h3>
                 <div class="form-group">
-                    <label>Número de WhatsApp Destinatario (Ej: 58412111357):</label>
+                    <label>Número de WhatsApp Destinatario:</label>
                     <input type="text" id="tienda-telefono" onchange="guardarConfigAjustes()">
                 </div>
                 <div class="form-group-row" style="margin-bottom:0;">
@@ -213,6 +213,16 @@
                 </div>
                 <ul class="admin-list" id="lista-categorias-admin" style="margin-top:15px;"></ul>
             </div>
+            
+            <div class="admin-card" style="border: 1px dashed var(--gold); background-color: #FFFDF7;">
+                <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Convertidor Masivo de Fotos</h3>
+                <div class="form-group">
+                    <label>Pega aquí los links que copiaste juntos (Uno abajo del otro):</label>
+                    <textarea id="conversor-links-area" rows="3" placeholder="http://link1.jpg&#10;http://link2.jpg" style="resize: none;"></textarea>
+                </div>
+                <button class="btn-gold w-100" style="background-color: var(--verde);" onclick="convertirLinksMasivos()">Juntar enlaces con comas</button>
+            </div>
+
             <div class="admin-card">
                 <h3 id="titulo-form-prod">Subir Nuevo Producto</h3>
                 <div class="form-group">
@@ -228,7 +238,7 @@
                     <input type="number" id="prod-precio-usd" step="0.01" placeholder="0.00">
                 </div>
                 <div class="form-group">
-                    <label>Enlace URL de la Foto (Soporta hasta 3 links separados por comas):</label>
+                    <label>Enlace URL de la Foto (Soportará el resultado del convertidor):</label>
                     <input type="text" id="prod-foto" placeholder="link1.jpg, link2.jpg, link3.jpg">
                 </div>
                 <button class="btn-gold w-100" id="btn-guardar-prod" onclick="procesarProducto()">Publicar Artículo</button>
@@ -315,10 +325,8 @@
                 if (!db.categorias) db.categorias = [];
                 if (!db.productos) db.productos = [];
             } else {
-                // Generar estructura por defecto en la nube si está vacío
                 guardarEnNube();
             }
-            // Retirar pantalla de carga e inicializar renderizadores
             document.getElementById('loading-categorias').classList.add('hidden');
             document.getElementById('subvista-menu-categorias').classList.remove('hidden');
             renderizarTodo();
@@ -326,7 +334,7 @@
             console.error("Error de sincronización reactiva en Firestore: ", error);
         });
 
-        // --- ENLACE AL ENTORNO WINDOW (Para compatibilidad con tus eventos inline del HTML) ---
+        // --- ENLACE AL ENTORNO WINDOW ---
         
         window.mostrarVista = function(vista) {
             document.getElementById('vista-cliente').classList.add('hidden');
@@ -345,6 +353,19 @@
             } else if(vista === 'admin') { 
                 document.getElementById('vista-admin').classList.remove('hidden'); 
             }
+        }
+
+        window.convertirLinksMasivos = function() {
+            const area = document.getElementById('conversor-links-area');
+            const texto = area.value.trim();
+            if(texto === "") return alert("Por favor pega enlaces válidos primero.");
+            
+            // Separa por saltos de línea, remueve espacios en blanco vacíos y une con comas
+            const formateado = texto.split('\n').map(link => link.trim()).filter(link => link !== "").join(', ');
+            
+            document.getElementById('prod-foto').value = formateado;
+            area.value = ""; // Limpia el recuadro para el próximo uso
+            alert("✨ Enlaces combinados e insertados en el campo de la Foto.");
         }
 
         window.seleccionarCategoriaNavegacion = function(catName) {
@@ -392,14 +413,12 @@
         window.cancelarEdicionCat = function() { idCatEditando = null; document.getElementById('titulo-form-cat').innerText = "Crear Nueva Categoría"; document.getElementById('nueva-categoria').value = ""; document.getElementById('btn-guardar-cat').innerText = "Añadir"; document.getElementById('btn-cancelar-cat').classList.add('hidden'); }
         window.eliminarCategoria = function(i) { if(confirm(`¿Seguro deseas eliminar "${db.categorias[i]}"?`)) { db.categorias.splice(i, 1); guardarEnNube(); } }
 
-        // MEJORA: Manejo de procesamiento con array de fotos (admite link unico o multiples separados por comas)
         window.procesarProducto = function() {
             const cat = document.getElementById('prod-categoria').value; 
             const nom = document.getElementById('prod-nombre').value.trim();
             const usd = parseFloat(document.getElementById('prod-precio-usd').value); 
             const fotoInput = document.getElementById('prod-foto').value.trim();
             
-            // Convierte el texto de las fotos en un array limpio
             const fotosArray = fotoInput ? fotoInput.split(',').map(link => link.trim()).filter(link => link !== "") : [];
 
             if(nom === "" || isNaN(usd) || usd <= 0) return alert("Completa los datos correctamente.");
@@ -425,7 +444,6 @@
             document.getElementById('prod-nombre').value = p.nombre;
             document.getElementById('prod-precio-usd').value = p.precioUsd; 
             
-            // Retrocompatibilidad: si antes usabas un string plano en p.foto, lo mete en un array para no romper nada
             const lasFotos = p.fotos ? p.fotos : (p.foto ? [p.foto] : []);
             document.getElementById('prod-foto').value = lasFotos.join(', ');
             
@@ -443,7 +461,6 @@
             if(!productoTemporalParaCarrito) return;
             let item = carrito.find(x => x.id === productoTemporalParaCarrito.id && x.talla === tallaTemporalSeleccionada);
             
-            // Toma la primera foto del array como miniatura del carrito
             let fotoCarrito = "";
             if (productoTemporalParaCarrito.fotos && productoTemporalParaCarrito.fotos.length > 0) {
                 fotoCarrito = productoTemporalParaCarrito.fotos[0];
@@ -483,7 +500,6 @@
             window.open(`https://wa.me/${db.telefono}?text=${encodeURIComponent(m)}`, '_blank');
         }
 
-        // MEJORA: Renderizado de productos con soporte para Carrusel de Fotos Dinámico y Zoom Táctil
         window.filtrarProductos = function() {
             if (!categoriaActiva) return;
             const bus = document.getElementById('search-input').value.toLowerCase();
@@ -493,7 +509,6 @@
             if(filtrados.length === 0) { cont.innerHTML = `<div class="empty-msg">No hay modelos disponibles en esta colección en este momento.</div>`; return; }
             
             filtrados.forEach(p => {
-                // Combina el nuevo formato 'fotos' array o el viejo string 'foto'
                 let listaFotos = p.fotos ? p.fotos : (p.foto ? [p.foto] : []);
                 let HTMLFotos = "";
                 let HTMLPuntos = "";
@@ -532,7 +547,6 @@
             });
         }
 
-        // MEJORA: Detecta el deslizamiento de los dedos (Scroll) para encender los puntitos del producto
         window.manejarScrollCarrusel = function(track) {
             const anchoSlide = track.offsetWidth;
             const indiceActivo = Math.round(track.scrollLeft / anchoSlide);
@@ -546,7 +560,6 @@
             }
         }
 
-        // MEJORA: Funciones globales para activar/desactivar la foto en pantalla completa
         window.abrirZoomFoto = function(url) {
             const modal = document.getElementById('modal-zoom-foto');
             const img = document.getElementById('img-ampliada');
