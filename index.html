@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bellezas - Actualización Técnica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-crema: #F7F4E9;
+            --gold: #C5944E;
+            --gold-dark: #A47536;
+            --verde: #3A5F40;
+            --text-dark: #2C2520;
+            --white: #FFFFFF;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; }
+        body { 
+            background-color: var(--bg-crema); 
+            color: var(--text-dark); 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px;
+            text-align: center;
+        }
+        .maintenance-container {
+            background-color: var(--white);
+            padding: 40px 30px;
+            border-radius: 20px;
+            border: 1px solid rgba(197, 148, 78, 0.3);
+            box-shadow: 0 10px 30px rgba(44, 37, 32, 0.05);
+            max-width: 450px;
+            width: 100%;
+            animation: fadeIn 0.5s ease;
+        }
+        h1 {
+            font-size: 32px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; margin-bottom: 10px;
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .subtitle {
+            color: var(--verde); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 30px;
+        }
+        .icon-box {
+            font-size: 50px; color: var(--gold); margin-bottom: 25px; position: relative; display: inline-block;
+        }
+        .icon-box i { animation: pulse 2s infinite ease-in-out; }
+        h2 { font-size: 18px; font-weight: 600; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+        p { font-size: 14px; color: #666; line-height: 1.6; margin-bottom: 25px; }
+        .badge-status {
+            display: inline-block; background-color: rgba(58, 95, 64, 0.1); color: var(--verde); 
+            padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; letter-spacing: 1px;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); color: var(--gold-dark); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+
+    <div class="maintenance-container">
+        <h1>Bellezas</h1>
+        <div class="subtitle">Estilo que enamora</div>
+        
+        <div class="icon-box">
+            <i class="fa-solid fa-screwdriver-wrench"></i>
+        </div>
+        
+        <h2>Mantenimiento Técnico</h2>
+        <p>Estamos optimizando nuestra plataforma para ofrecerte una experiencia de compra más rápida, segura y premium. ¡El catálogo estará de vuelta muy pronto!</p>
+        
+        <span class="badge-status">✨ Trabajando para solucionarlo</span>
+    </div>
+
+</body>
+</html>
