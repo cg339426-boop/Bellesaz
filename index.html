@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bellezas - Catálogo Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-crema: #F7F4E9;
+            --gold: #C5944E;
+            --gold-dark: #A47536;
+            --verde: #3A5F40;
+            --coral: #D94E6F;
+            --text-dark: #2C2520;
+            --white: #FFFFFF;
+            --gray-light: #EFECE3;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-crema); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 70px; }
+        
+        .main-header {
+            background: radial-gradient(circle at top, #ffffff 0%, var(--bg-crema) 100%);
+            text-align: center; padding: 25px 15px; border-bottom: 1px solid rgba(197, 148, 78, 0.25);
+            position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(44, 37, 32, 0.06);
+        }
+        .main-header h1 {
+            font-size: 36px; font-weight: 700; letter-spacing: 5px; text-transform: uppercase; margin: 0;
+            background: linear-gradient(135deg, #BF953F 0%, #FCF6BA 25%, #B38728 50%, #FBF5B7 75%, #AA771C 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0px 2px 3px rgba(44, 37, 32, 0.2));
+        }
+        .header-subtitle-box { display: flex; align-items: center; justify-content: center; gap: 15px; margin-top: 5px; }
+        .header-line { height: 1px; width: 30px; background: linear-gradient(to right, var(--gold), transparent); }
+        .main-header p { color: var(--verde); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; margin: 0; }
+
+        .app-container { padding: 20px 15px; flex: 1; max-width: 600px; width: 100%; margin: 0 auto; }
+        
+        .back-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; animation: fadeIn 0.3s ease; }
+        .btn-back { background: none; border: none; color: var(--gold-dark); font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+        .category-title-view { font-size: 16px; font-weight: 600; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; border-left: 2px solid var(--gold); padding-left: 10px; }
+
+        .search-box { background-color: var(--white); display: flex; align-items: center; padding: 12px 15px; border-radius: 25px; border: 1px solid var(--gold); margin-bottom: 20px; }
+        .search-box i { color: var(--gold); margin-right: 10px; }
+        .search-box input { border: none; outline: none; width: 100%; font-size: 15px; background: transparent; }
+
+        .categories-menu-vertical { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 15px 0; max-width: 340px; margin: 0 auto; width: 100%; }
+        .cat-btn-premium { 
+            background: linear-gradient(135deg, #FFFDF7 0%, #F5F1E3 100%); color: var(--text-dark); 
+            border: 2px solid var(--gold); padding: 18px 25px; border-radius: 14px; font-size: 13px; 
+            font-weight: 700; text-transform: uppercase; letter-spacing: 2.5px; cursor: pointer; 
+            width: 100%; text-align: center; display: flex; justify-content: center; align-items: center; gap: 10px;
+            box-shadow: 0 6px 15px rgba(197, 148, 78, 0.12); transition: all 0.2s ease;
+        }
+        .cat-btn-premium:active { transform: scale(0.97); }
+
+        /* RECUADROS MÁS GRANDES - MEJORA VISUAL */
+        .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; animation: fadeIn 0.4s ease; }
+        .product-card { background-color: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-light); display: flex; flex-direction: column; box-shadow: 0 6px 12px rgba(0,0,0,0.03); }
+        
+        .prod-img-box { position: relative; width: 100%; height: 210px; overflow: hidden; background-color: var(--gray-light); display: flex; align-items: center; justify-content: center; }
+        .carousel-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .carousel-track::-webkit-scrollbar { display: none; }
+        .carousel-slide { min-width: 100%; height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        
+        .carousel-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; }
+        .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; }
+        .dot.active { background: var(--gold); width: 12px; border-radius: 3px; transition: all 0.2s; }
+
+        .prod-info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; justify-content: space-between; background: var(--white); }
+        .prod-info h3 { font-size: 14px; font-weight: 600; margin-bottom: 8px; min-height: 38px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .prod-price { font-size: 13px; margin-bottom: 12px; }
+        .prod-price .usd { color: var(--coral); font-weight: 700; font-size: 15px; }
+        .prod-price .bcv { color: var(--verde); font-weight: 500; }
+        
+        .btn-action { background-color: var(--gold); color: var(--white); border: none; padding: 10px; border-radius: 8px; font-weight: 600; font-size: 13px; width: 100%; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; }
+
+        .hidden { display: none !important; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+        .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 10px; color: var(--verde); }
+        .cart-card { background-color: var(--white); padding: 15px; border-radius: 10px; border: 1px solid var(--gold); margin-bottom: 20px; }
+        .cart-item { display: flex; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--gray-light); align-items: center; }
+        .cart-item-img { width: 50px; height: 50px; background-color: var(--gray-light); border-radius: 6px; overflow: hidden; }
+        .cart-item-img img { width: 100%; height: 100%; object-fit: cover; }
+        .cart-item-details { flex: 1; }
+        .cart-item-details h4 { font-size: 13px; font-weight: 600; }
+        .cart-item-details p { font-size: 11px; color: #777; }
+        .cart-total-box { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px dashed var(--gold); font-weight: 700; font-size: 15px; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background-color: var(--white); border-top: 1px solid var(--gray-light); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #b5b0a1; font-size: 10px; font-weight: 600; gap: 4px; cursor: pointer; position: relative; }
+        .nav-item.active { color: var(--gold); }
+        .nav-item i { font-size: 18px; }
+        .badge { position: absolute; top: -5px; right: -8px; background-color: var(--coral); color: var(--white); font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 700; }
+        
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+        .modal-content { background: var(--white); padding: 20px; border-radius: 12px; width: 100%; max-width: 320px; text-align: center; border: 2px solid var(--gold); }
+        .tallas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+        .talla-btn { padding: 8px; border: 1px solid var(--gold); background: var(--bg-crema); border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 12px; }
+        .talla-btn.selected { background: var(--gold); color: var(--white); }
+        .empty-msg { grid-column: span 2; text-align: center; padding: 40px 15px; color: var(--gold-dark); font-style: italic; font-size: 13px; }
+        .loading-overlay { font-size: 14px; color: var(--gold-dark); text-align: center; padding: 40px 20px; font-style: italic; }
+
+        .modal-zoom { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 300; padding: 10px; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-zoom.active { opacity: 1; pointer-events: auto; }
+        .modal-zoom-content { max-width: 100%; max-height: 85vh; border-radius: 8px; object-fit: contain; }
+        .btn-close-zoom { position: absolute; top: 20px; right: 20px; background: none; border: none; color: white; font-size: 35px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header class="main-header">
+        <h1>Bellezas</h1>
+        <div class="header-subtitle-box">
+            <div class="header-line"></div>
+            <p>Estilo que enamora</p>
+            <div class="header-line"></div>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <!-- VISTA DEL CLIENTE -->
+        <section id="vista-cliente">
+            <div id="loading-categorias" class="loading-overlay">
+                <i class="fa-solid fa-sync fa-spin"></i> Cargando colecciones...
+            </div>
+            <div id="subvista-menu-categorias" class="categories-menu-vertical hidden"></div>
+
+            <div id="subvista-productos" class="hidden">
+                <div class="back-header">
+                    <button class="btn-back" onclick="regresarAlMenuCategorias()">
+                        <i class="fa-solid fa-arrow-left"></i> Atrás
+                    </button>
+                    <span class="category-title-view" id="texto-categoria-actual">Categoría</span>
+                </div>
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" id="search-input" placeholder="Buscar en esta colección..." oninput="filtrarProductos()">
+                </div>
+                <div class="products-grid" id="products-container"></div>
+            </div>
+        </section>
+
+        <!-- VISTA DE LA BOLSA DE COMPRAS -->
+        <section id="vista-carrito" class="hidden">
+            <div class="cart-header">
+                <h2><i class="fa-solid fa-cart-shopping"></i> Mi Bolsa</h2>
+            </div>
+            <div class="cart-card">
+                <div id="items-carrito-container"></div>
+                <div class="cart-total-box">
+                    <span>Total Pedido:</span>
+                    <span id="total-carrito-texto">$0.00 | Bs 0.00</span>
+                </div>
+            </div>
+            <button class="btn-action" style="background-color:#25D366; padding: 14px; font-size:14px;" onclick="enviarPedidoWhatsApp()">
+                <i class="fa-brands fa-whatsapp"></i> Confirmar y Enviar por WhatsApp
+            </button>
+        </section>
+    </main>
+
+    <!-- MODAL SELECCIÓN DE TALLA -->
+    <div id="modal-talla" class="modal hidden">
+        <div class="modal-content">
+            <h3>Selecciona la Talla</h3>
+            <div class="tallas-grid" id="contenedor-tallas-modal"></div>
+            <button class="btn-action" style="width:100%;" onclick="confirmarAgregarAlCarrito()">Agregar a la Bolsa</button>
+        </div>
+    </div>
+
+    <!-- MODAL DE FOTO AMPLIADA -->
+    <div id="modal-zoom-foto" class="modal-zoom" onclick="cerrarZoomFoto()">
+        <button class="btn-close-zoom" onclick="cerrarZoomFoto()">&times;</button>
+        <img id="img-ampliada" class="modal-zoom-content" src="" alt="Vista ampliada">
+    </div>
+
+    <!-- NAVEGACIÓN INFERIOR -->
+    <nav class="bottom-nav">
+        <div id="nav-cliente" class="nav-item active" onclick="mostrarVista('cliente')">
+            <i class="fa-solid fa-bag-shopping"></i><span>Catálogo</span>
+        </div>
+        <div id="nav-carrito" class="nav-item" onclick="mostrarVista('carrito')">
+            <i class="fa-solid fa-cart-shopping"></i><span>Bolsa</span>
+            <span class="badge" id="badge-cart-count">0</span>
+        </div>
+    </nav>
+    <script>
+        // CONFIGURACIÓN DE CONEXIÓN CON GOOGLE SHEETS
+        // Reemplaza esto con el ID real de tu hoja de cálculo cuando la tengas lista
+        const SHEET_ID = '1wvxg31YW9oorfYoXLlA4lccNlHHF-g0BHvK5hZ6ZIiI'; 
+        
+        let productosData = [];
+        let carrito = [];
+        let tasaCambio = 40.00; // Valor base por si acaso
+        let telefonoWhatsApp = "584125555555"; // Valor base por si acaso
+        let categoriaSeleccionada = "";
+        let productoEnSeleccion = null;
+
+        // Carga inicial al abrir la página
+        window.addEventListener('DOMContentLoaded', () => {
+            inicializarCatalogo();
+        });
+
+        async function inicializarCatalogo() {
+            if (SHEET_ID === 'TU_ID_DE_GOOGLE_SHEETS_AQUI') {
+                document.getElementById('loading-categorias').innerHTML = "⚠️ Falta configurar el ID de Google Sheets.";
+                return;
+            }
+            try {
+                // 1. Leer Configuración (Tasa y Teléfono)
+                const urlConfig = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Configuracion`;
+                const resConfig = await fetch(urlConfig);
+                const textConfig = await resConfig.text();
+                procesarConfiguracion(textConfig);
+
+                // 2. Leer Productos
+                const urlProd = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Productos`;
+                const resProd = await fetch(urlProd);
+                const textProd = await resProd.text();
+                procesarProductos(textProd);
+
+                document.getElementById('loading-categorias').classList.add('hidden');
+                document.getElementById('subvista-menu-categorias').classList.remove('hidden');
+                generarMenuCategorias();
+            } catch (error) {
+                console.error(error);
+                document.getElementById('loading-categorias').innerHTML = "❌ Error al conectar con el inventario.";
+            }
+        }
+
+        function procesarConfiguracion(jsonText) {
+            const data = limpiarJSONGoogle(jsonText);
+            data.table.rows.forEach(row => {
+                const variable = row.c[0]?.v;
+                const valor = row.c[1]?.v;
+                if (variable === "Tasa_Cambio") tasaCambio = parseFloat(valor) || tasaCambio;
+                if (variable === "Telefono_WhatsApp") telefonoWhatsApp = String(valor).trim() || telefonoWhatsApp;
+            });
+        }
+
+        function procesarProductos(jsonText) {
+            const data = limpiarJSONGoogle(jsonText);
+            const headers = data.table.cols.map(col => col.label);
+            
+            productosData = data.table.rows.map(row => {
+                let obj = {};
+                row.c.forEach((cell, index) => {
+                    let label = headers[index];
+                    if (label) obj[label] = cell ? cell.v : "";
+                });
+                return obj;
+            }).filter(p => p.Disponible && String(p.Disponible).toUpperCase() === 'SI');
+        }
+
+        function limpiarJSONGoogle(jsonText) {
+            const r = jsonText.match(/google\.visualization\.Query\.setResponse\(([\s\S\w\W]*)\);/);
+            return JSON.parse(r[1]);
+        }
+
+        function generarMenuCategorias() {
+            const categoriasUnicas = [...new Set(productosData.map(p => p.Categoria))].filter(Boolean);
+            const container = document.getElementById('subvista-menu-categorias');
+            container.innerHTML = "";
+
+            if (categoriasUnicas.length === 0) {
+                container.innerHTML = "<p class='empty-msg'>No hay mercancía disponible por el momento.</p>";
+                return;
+            }
+
+            categoriasUnicas.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = "cat-btn-premium";
+                btn.innerHTML = `${cat} <i class="fa-solid fa-chevron-right" style="font-size:10px; opacity:0.6;"></i>`;
+                btn.onclick = () => verCategoria(cat);
+                container.appendChild(btn);
+            });
+        }
+
+        function verCategoria(cat) {
+            categoriaSeleccionada = cat;
+            document.getElementById('subvista-menu-categorias').classList.add('hidden');
+            document.getElementById('subvista-productos').classList.remove('hidden');
+            document.getElementById('texto-categoria-actual').innerText = cat;
+            document.getElementById('search-input').value = "";
+            renderizarProductos(productosData.filter(p => p.Categoria === cat));
+        }
+
+        function regresarAlMenuCategorias() {
+            document.getElementById('subvista-productos').classList.add('hidden');
+            document.getElementById('subvista-menu-categorias').classList.remove('hidden');
+        }
+
+        function renderizarProductos(lista) {
+            const container = document.getElementById('products-container');
+            container.innerHTML = "";
+
+            if (lista.length === 0) {
+                container.innerHTML = "<p class='empty-msg'>No se encontraron artículos.</p>";
+                return;
+            }
+
+            lista.forEach((p, idxGlobal) => {
+                const fotos = [p.Foto1, p.Foto2, p.Foto3].filter(Boolean);
+                const bcvPrice = (parseFloat(p.Precio_USD) * tasaCambio).toFixed(2);
+                
+                let carouselHTML = `<div class="carousel-track">`;
+                fotos.forEach(f => {
+                    carouselHTML += `<div class="carousel-slide"><img src="${f}" onclick="abrirZoomFoto('${f}')" onerror="this.src='https://placehold.co/400x500?text=Bellezas'"></div>`;
+                });
+                carouselHTML += `</div>`;
+
+                let dotsHTML = "";
+                if (fotos.length > 1) {
+                    dotsHTML = `<div class="carousel-dots">`;
+                    fotos.forEach((_, i) => {
+                        dotsHTML += `<div class="dot ${i === 0 ? 'active' : ''}" data-idx="${i}"></div>`;
+                    });
+                    dotsHTML += `</div>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = "product-card";
+                card.innerHTML = `
+                    <div class="prod-img-box" id="pic-box-${idxGlobal}">
+                        ${carouselHTML}
+                        ${dotsHTML}
+                    </div>
+                    <div class="prod-info">
+                        <h3>${p.Titulo}</h3>
+                        <div class="prod-price">
+                            <div class="usd">$${parseFloat(p.Precio_USD).toFixed(2)}</div>
+                            <div class="bcv">Bs ${bcvPrice}</div>
+                        </div>
+                        <button class="btn-action" onclick="abrirModalTalla(${JSON.stringify(p).replace(/"/g, '&quot;')})">
+                            <i class="fa-solid fa-cart-plus"></i> Agregar
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+                vincularDesplazamientoCarrusel(`pic-box-${idxGlobal}`);
+            });
+        }
+
+        function vincularDesplazamientoCarrusel(boxId) {
+            const box = document.getElementById(boxId);
+            const track = box.querySelector('.carousel-track');
+            const dots = box.querySelectorAll('.dot');
+            if (!track || dots.length === 0) return;
+
+            track.addEventListener('scroll', () => {
+                const index = Math.round(track.scrollLeft / track.clientWidth);
+                dots.forEach(d => d.classList.remove('active'));
+                if (dots[index]) dots[index].classList.add('active');
+            });
+        }
+
+        function filtrarProductos() {
+            const term = document.getElementById('search-input').value.toLowerCase().trim();
+            const filtrados = productosData.filter(p => p.Categoria === categoriaSeleccionada && p.Titulo.toLowerCase().includes(term));
+            renderizarProductos(filtrados);
+        }
+
+        function abrirModalTalla(producto) {
+            productoEnSeleccion = producto;
+            const container = document.getElementById('contenedor-tallas-modal');
+            container.innerHTML = "";
+            
+            const listaTallas = producto.Tallas ? String(producto.Tallas).split(',').map(t => t.trim()) : [];
+            
+            if (listaTallas.length === 0 || listaTallas[0] === "") {
+                confirmarAgregarAlCarrito(""); 
+                return;
+            }
+
+            listaTallas.forEach(talla => {
+                const b = document.createElement('button');
+                b.className = "talla-btn";
+                b.innerText = talla;
+                b.onclick = () => {
+                    container.querySelectorAll('.talla-btn').forEach(btn => btn.classList.remove('selected'));
+                    b.classList.add('selected');
+                };
+                container.appendChild(b);
+            });
+
+            document.getElementById('modal-talla').classList.remove('hidden');
+        }
+
+        function confirmarAgregarAlCarrito(tallaDirecta = null) {
+            let tallaSelected = tallaDirecta;
+            if (tallaDirecta === null) {
+                const btnSel = document.getElementById('contenedor-tallas-modal').querySelector('.talla-btn.selected');
+                if (!btnSel) {
+                    alert("Por favor, selecciona una talla para continuar.");
+                    return;
+                }
+                tallaSelected = btnSel.innerText;
+            }
+
+            const itemExistente = carrito.find(item => item.Titulo === productoEnSeleccion.Titulo && item.Talla === tallaSelected);
+            if (itemExistente) {
+                itemExistente.Cantidad += 1;
+            } else {
+                carrito.push({
+                    Titulo: productoEnSeleccion.Titulo,
+                    Precio: parseFloat(productoEnSeleccion.Precio_USD),
+                    Talla: tallaSelected,
+                    Foto: productoEnSeleccion.Foto1,
+                    Cantidad: 1
+                });
+            }
+
+            document.getElementById('modal-talla').classList.add('hidden');
+            actualizarBolsaUI();
+        }
+
+        function actualizarBolsaUI() {
+            const totalCount = carrito.reduce((sum, i) => sum + i.Cantidad, 0);
+            document.getElementById('badge-cart-count').innerText = totalCount;
+
+            const container = document.getElementById('items-carrito-container');
+            container.innerHTML = "";
+
+            if (carrito.length === 0) {
+                container.innerHTML = "<p style='text-align:center; color:#999; padding:20px 0;'>La bolsa está vacía</p>";
+                document.getElementById('total-carrito-texto').innerText = "$0.00 | Bs 0.00";
+                return;
+            }
+
+            let totalUSD = 0;
+            carrito.forEach((item, index) => {
+                totalUSD += item.Precio * item.Cantidad;
+                const div = document.createElement('div');
+                div.className = "cart-item";
+                div.innerHTML = `
+                    <div class="cart-item-img"><img src="${item.Foto}" onerror="this.src='https://placehold.co/100'"></div>
+                    <div class="cart-item-details">
+                        <h4>${item.Titulo}</h4>
+                        <p>${item.Talla ? 'Talla: ' + item.Talla + ' | ' : ''}$${item.Precio.toFixed(2)}</p>
+                        <p style="font-weight:600; color:var(--text-dark);">Cant: ${item.Cantidad}</p>
+                    </div>
+                    <button onclick="eliminarDelCarrito(${index})" style="background:none; border:none; color:var(--coral); padding:10px; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                `;
+                container.appendChild(div);
+            });
+
+            const totalBCV = (totalUSD * tasaCambio).toFixed(2);
+            document.getElementById('total-carrito-texto').innerText = `$${totalUSD.toFixed(2)} | Bs ${totalBCV}`;
+        }
+
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarBolsaUI();
+        }
+
+        function mostrarVista(vista) {
+            document.getElementById('nav-cliente').classList.remove('active');
+            document.getElementById('nav-carrito').classList.remove('active');
+            document.getElementById('vista-cliente').classList.add('hidden');
+            document.getElementById('vista-carrito').classList.add('hidden');
+
+            if (vista === 'cliente') {
+                document.getElementById('nav-cliente').classList.add('active');
+                document.getElementById('vista-cliente').classList.remove('hidden');
+            } else {
+                document.getElementById('nav-carrito').classList.add('active');
+                document.getElementById('vista-carrito').classList.remove('hidden');
+            }
+        }
+
+        function enviarPedidoWhatsApp() {
+            if (carrito.length === 0) return;
+            
+            let texto = `🛍️ *NUEVO PEDIDO - BELLEZAS*\n`;
+            texto += `-----------------------------------------\n\n`;
+            
+            let totalUSD = 0;
+            carrito.forEach(item => {
+                const sub = item.Precio * item.Cantidad;
+                totalUSD += sub;
+                texto += `▪️ *${item.Titulo}*\n`;
+                if (item.Talla) texto += `   Talla: ${item.Talla}\n`;
+                texto += `   Cantidad: ${item.Cantidad} x $${item.Precio.toFixed(2)}\n\n`;
+            });
+
+            const totalBCV = (totalUSD * tasaCambio).toFixed(2);
+            texto += `-----------------------------------------\n`;
+            texto += `💰 *TOTAL A PAGAR:*\n`;
+            texto += `💵 *Ref:* $${totalUSD.toFixed(2)}\n`;
+            texto += `🇻🇪 *Tasa:* Bs ${tasaCambio.toFixed(2)}\n`;
+            texto += `📉 *Total Bs:* Bs ${totalBCV}\n\n`;
+            texto += `¡Hola! Quedo atenta para coordinar el pago y la entrega de mis prendas. ✨`;
+
+            const url = `https://api.whatsapp.com/send?phone=${telefonoWhatsApp}&text=${encodeURIComponent(texto)}`;
+            window.open(url, '_blank');
+        }
+
+        function abrirZoomFoto(url) {
+            document.getElementById('img-ampliada').src = url;
+            document.getElementById('modal-zoom-foto').classList.add('active');
+        }
+
+        function cerrarZoomFoto() {
+            document.getElementById('modal-zoom-foto').classList.remove('active');
+        }
+    </script>
+</body>
+</html>
