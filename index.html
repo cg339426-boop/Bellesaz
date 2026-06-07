@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bellezas - Catálogo Premium</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-crema: #F7F4E9;
+            --gold: #C5944E;
+            --gold-dark: #A47536;
+            --verde: #3A5F40;
+            --coral: #D94E6F;
+            --text-dark: #2C2520;
+            --white: #FFFFFF;
+            --gray-light: #EFECE3;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg-crema); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 70px; }
+        
+        /* CABECERA PREMIUM CON BOTÓN SECRETO */
+        header { background: var(--white); padding: 20px; text-align: center; border-bottom: 3px solid var(--gold); position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .logo-marca { font-size: 28px; font-weight: 700; color: var(--text-dark); letter-spacing: 2px; text-transform: uppercase; }
+        .slogan-marca { font-size: 11px; color: var(--gold-dark); text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; font-weight: 500; display: inline-block; cursor: pointer; }
+        
+        /* MENÚ CATEGORÍAS */
+        .nav-container { background: var(--white); padding: 10px 0; border-bottom: 1px solid var(--gray-light); position: sticky; top: 0; z-index: 99; overflow-x: auto; white-space: nowrap; scrollbar-width: none; }
+        .nav-container::-webkit-scrollbar { display: none; }
+        .nav-tabs { display: inline-flex; padding: 0 15px; gap: 10px; }
+        .nav-btn { background: var(--gray-light); border: none; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--text-dark); cursor: pointer; transition: all 0.2s; }
+        .nav-btn.active { background: var(--gold); color: var(--white); }
+
+        /* TASA INDICADORA */
+        .tasa-banner { text-align: center; font-size: 12px; padding: 6px; background: var(--gray-light); color: var(--text-dark); font-weight: 500; }
+
+        /* CONTENEDOR PRINCIPAL */
+        .main-content { max-width: 600px; width: 100%; margin: 0 auto; padding: 15px; flex: 1; }
+        
+        /* PANTALLA CARGA */
+        .loading-screen { text-align: center; padding: 50px 20px; }
+        .spinner { width: 40px; height: 40px; border: 4px solid rgba(197,148,78,0.1); border-top: 4px solid var(--gold); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* TARJETAS DE PRODUCTOS (PREMIUM SLIDER) */
+        .catalog-grid { display: flex; flex-direction: column; gap: 20px; }
+        .product-card { background: var(--white); border-radius: 16px; overflow: hidden; box-shadow: 0 6px 15px rgba(44,37,32,0.04); border: 1px solid rgba(197,148,78,0.15); display: flex; flex-direction: column; }
+        
+        /* CARRUSEL DE IMÁGENES */
+        .carousel-container { position: relative; width: 100%; aspect-ratio: 1/1; background: #fafafa; overflow: hidden; }
+        .carousel-track { display: flex; width: 100%; height: 100%; transition: transform 0.3s ease-out; }
+        .carousel-slide { min-width: 100%; height: 100%; position: relative; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .carousel-dots { position: absolute; bottom: 12px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 5; background: rgba(0,0,0,0.2); padding: 4px 8px; border-radius: 10px; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: background 0.2s; }
+        .dot.active { background: var(--white); width: 12px; border-radius: 4px; }
+
+        /* INFO PRODUCTO */
+        .product-info { padding: 16px; display: flex; flex-direction: column; flex-grow: 1; }
+        .product-title { font-size: 16px; font-weight: 600; color: var(--text-dark); margin-bottom: 6px; text-transform: capitalize; }
+        .product-desc { font-size: 12px; color: #777; margin-bottom: 12px; line-height: 1.4; }
+        .price-row { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 10px; }
+        .price-usd { font-size: 20px; font-weight: 700; color: var(--verde); }
+        .price-bs { font-size: 12px; color: #666; font-weight: 500; display: block; margin-top: 2px; }
+
+        /* SELECTOR TALLAS ACCESIBLE */
+        .size-selector-area { margin-bottom: 12px; }
+        .size-label { font-size: 11px; text-transform: uppercase; color: #888; font-weight: 600; margin-bottom: 6px; display: block; }
+        .size-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+        .size-badge { background: var(--gray-light); border: 1px solid transparent; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; color: var(--text-dark); transition: all 0.2s; }
+        .size-badge.selected { background: var(--text-dark); color: var(--white); border-color: var(--text-dark); }
+
+        /* ACCIONES */
+        .btn-add { background: var(--gold); color: var(--white); border: none; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 10px rgba(197,148,78,0.2); }
+        .btn-add:active { transform: scale(0.97); }
+
+        /* BARRA COMPRAS FLOTANTE (CARRITO) */
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 2px solid var(--gold); padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 -4px 15px rgba(0,0,0,0.05); z-index: 100; transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .cart-bar.active { transform: translateY(0); }
+        .cart-info { display: flex; flex-direction: column; }
+        .cart-count { font-size: 12px; color: #777; font-weight: 500; }
+        .cart-total { font-size: 18px; font-weight: 700; color: var(--verde); }
+        .btn-order { background: var(--verde); color: var(--white); border: none; padding: 10px 20px; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(58,95,64,0.25); }
+
+        /* LUPA / ZOOM FOTO MULTI-TOUCH */
+        .zoom-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.95); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .zoom-overlay img { max-width: 95%; max-height: 85%; object-fit: contain; border-radius: 4px; }
+        .zoom-close { position: absolute; top: 20px; right: 20px; color: var(--white); font-size: 30px; cursor: pointer; background: rgba(255,255,255,0.1); width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+
+        /* MODAL ADMINISTRADOR */
+        .admin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(44,37,32,0.6); z-index: 1500; display: none; padding: 15px; overflow-y: auto; align-items: flex-start; }
+        .admin-box { background: var(--white); border-radius: 16px; width: 100%; max-width: 500px; margin: 20px auto; padding: 20px; border: 2px solid var(--gold); box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--gray-light); padding-bottom: 10px; }
+        .admin-title { font-size: 18px; font-weight: 700; color: var(--text-dark); }
+        .admin-close { font-size: 20px; cursor: pointer; color: #999; }
+        
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #666; margin-bottom: 5px; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #C5944E60; border-radius: 8px; font-size: 14px; background: var(--bg-crema); color: var(--text-dark); }
+        .form-control:focus { outline: none; border-color: var(--gold); background: var(--white); }
+        
+        .admin-actions { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-panel { flex: 1; padding: 11px; border-radius: 8px; font-weight: 600; font-size: 13px; cursor: pointer; border: none; text-align: center; }
+        .btn-panel.save { background: var(--gold); color: var(--white); }
+        .btn-panel.cancel { background: var(--gray-light); color: var(--text-dark); }
+
+        /* SECCIONES EN EL PANEL */
+        .panel-section { border: 1px solid var(--gray-light); padding: 14px; border-radius: 10px; margin-bottom: 15px; background: #FCFAF5; }
+        .panel-section-title { font-size: 13px; font-weight: 700; color: var(--gold-dark); text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px; border-bottom: 1px dashed #C5944E40; padding-bottom: 4px; }
+        
+        /* LISTAS DE EDICIÓN */
+        .panel-list { list-style: none; max-height: 150px; overflow-y: auto; border: 1px solid var(--gray-light); border-radius: 6px; background: var(--white); margin-bottom: 10px; }
+        .panel-list li { padding: 8px 12px; font-size: 12px; border-bottom: 1px solid var(--gray-light); display: flex; justify-content: space-between; align-items: center; }
+        .panel-list li:last-child { border-bottom: none; }
+        .actions-panel { display: flex; gap: 6px; }
+        .btn-icon { background: none; border: none; cursor: pointer; font-size: 12px; padding: 4px; }
+        .btn-icon.edit { color: var(--gold); }
+        .btn-icon.delete { color: var(--coral); }
+        
+        .input-inline-group { display: flex; gap: 8px; }
+        .input-inline-group .form-control { flex: 1; }
+        .btn-inline-add { background: var(--text-dark); color: var(--white); border: none; padding: 0 15px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo-marca">Bellezas</div>
+        <div class="slogan-marca" onclick="solicitarAccesoAdmin()">Estilo que enamora</div>
+    </header>
+
+    <div class="tasa-banner">
+        Tasa de Cambio: <span id="tasa-texto">0.00</span> Bs/$ • WhatsApp: <span id="tel-texto">-</span>
+    </div>
+
+    <div class="nav-container">
+        <div class="nav-tabs" id="categorias-nav">
+            </div>
+    </div>
+
+    <main class="main-content">
+        <div class="loading-screen" id="cargando-pantalla">
+            <div class="spinner"></div>
+            <p style="font-size: 13px; color: #888; font-weight: 500;">Conectando con la nube de Bellezas...</p>
+        </div>
+
+        <div class="catalog-grid" id="catalogo-grid" style="display: none;">
+            </div>
+    </main>
+
+    <div class="cart-bar" id="cart-bar">
+        <div class="cart-info">
+            <span class="cart-count" id="cart-count">0 artículos seleccionados</span>
+            <span class="cart-total" id="cart-total">$0.00</span>
+        </div>
+        <button class="btn-order" onclick="enviarPedidoWhatsApp()">
+            <i class="fa-brands fa-whatsapp"></i> Confirmar Pedido
+        </button>
+    </div>
+
+    <div class="zoom-overlay" id="zoom-overlay" onclick="cerrarZoomFoto()">
+        <span class="zoom-close">&times;</span>
+        <img id="zoom-img" src="" alt="Zoom">
+    </div>
+
+    <div class="admin-modal" id="admin-modal">
+        <div class="admin-box">
+            <div class="admin-header">
+                <div class="admin-title" id="panel-admin-title">Panel de Control General</div>
+                <div class="admin-close" onclick="cerrarAdmin()">&times;</div>
+            </div>
+            
+            <div class="panel-section">
+                <div class="panel-section-title">Variables Base</div>
+                <div class="form-group">
+                    <label>Tasa del Dólar (Bs)</label>
+                    <input type="number" step="0.01" id="tasa-dolar-input" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono WhatsApp (Ej: 584120000000)</label>
+                    <input type="text" id="tienda-telefono" class="form-control">
+                </div>
+                <button class="btn-panel save" style="width:100%;" onclick="guardarConfigBasica()">Actualizar Ajustes</button>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-title">Gestionar Categorías</div>
+                <ul class="panel-list" id="lista-categorias-admin"></ul>
+                <div class="input-inline-group">
+                    <input type="text" id="nueva-cat-input" class="form-control" placeholder="Nombre nueva categoría...">
+                    <button class="btn-inline-add" onclick="agregarCategoria()">+</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-title" id="form-prod-title">Subir Nuevo Producto</div>
+                
+                <input type="hidden" id="edit-prod-id" value="">
+
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="prod-categoria" class="form-control"></select>
+                </div>
+                <div class="form-group">
+                    <label>Nombre del Artículo</label>
+                    <input type="text" id="prod-nombre" class="form-control" placeholder="Ej: Crop Top Cadena">
+                </div>
+                <div class="form-group">
+                    <label>Descripción / Detalles</label>
+                    <input type="text" id="prod-desc" class="form-control" placeholder="Ej: Tela acanalada, stretch">
+                </div>
+                <div class="form-group">
+                    <label>Precio Unitario ($)</label>
+                    <input type="number" step="0.01" id="prod-precio" class="form-control" placeholder="0.00">
+                </div>
+                <div class="form-group">
+                    <label>Fotos (Soporta hasta 3 links separados por coma)</label>
+                    <input type="text" id="prod-fotos" class="form-control" placeholder="https://link1.com, https://link2.com">
+                </div>
+                
+                <div class="admin-actions">
+                    <button class="btn-panel save" onclick="procesarProducto()">Publicar Artículo</button>
+                    <button class="btn-panel cancel" id="btn-cancelar-edicion" style="display:none;" onclick="limpiarFormProducto()">Cancelar</button>
+                </div>
+            </div>
+
+            <div class="panel-section">
+                <div class="panel-section-title">Artículos en Inventario</div>
+                <ul class="panel-list" id="lista-productos-admin" style="max-height: 200px;"></ul>
+            </div>
+
+            <button class="btn-panel cancel" style="width: 100%; margin-top: 10px; font-weight: 700;" onclick="cerrarAdmin()">Cerrar Administrador</button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Configuración exacta de tu Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyD8_-NFb0q903-wOP2xnr_faqka-G8Lo6k",
+            authDomain: "bellezas-fa52a.firebaseapp.com",
+            databaseURL: "https://bellezas-fa52a-default-rtdb.firebaseio.com",
+            projectId: "bellezas-fa52a",
+            storageBucket: "bellezas-fa52a.firebasestorage.app",
+            messagingSenderId: "1074680332863",
+            appId: "1:1074680332863:web:4c85d487fc4c59a01c2e8a"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const rtdb = getDatabase(app);
+        const firestore = getFirestore(app);
+
+        // Estado local de la app
+        let db = { clave: "1234", tasa: 45.00, telefono: "584124111357", categorias: ["Todos"], productos: [] };
+        let carrito = {};
+        let categoriaSeleccionada = "Todos";
+
+        // --- ASISTENTE DE AUTO-MUDANZA INTEGRADO ---
+        async function ejecutarMigraciónAutomatica() {
+            try {
+                // Revisamos si ya Realtime Database tiene productos adentro
+                const testRef = ref(rtdb, "config_bellezas/productos");
+                onValue(testRef, async (snap) => {
+                    const data = snap.val();
+                    // Si Realtime Database está vacía, jalamos el tesoro de Firestore
+                    if (!data || Object.keys(data).length === 0) {
+                        console.log("Detectada base de datos nueva vacía. Iniciando mudanza invisible desde Firestore...");
+                        const docRef = doc(firestore, "config_bellezas", "config_bellezas");
+                        const fireSnap = await getDoc(docRef);
+
+                        if (fireSnap.exists()) {
+                            const datosAnteriores = fireSnap.data();
+                            const categoriasRecuperadas = datosAnteriores.categorias || ["General"];
+                            const productosRecuperados = datosAnteriores.productos || [];
+                            const claveRecuperada = datosAnteriores.clave || "1234";
+
+                            // Estructurar adecuadamente para Realtime
+                            const mapeoProductos = {};
+                            productosRecuperados.forEach((p, idx) => {
+                                const idProd = p.id || Date.now() + idx;
+                                let fTexto = "";
+                                if (Array.isArray(p.fotos)) fTexto = p.fotos.join(",");
+                                else if (typeof p.fotos === "string") fTexto = p.fotos;
+
+                                mapeoProductos[idProd] = {
+                                    id: idProd,
+                                    nombre: p.nombre || p.titulo || "Artículo",
+                                    precioUsd: parseFloat(p.precioUsd || p.precio || 0),
+                                    categoria: p.categoria || "General",
+                                    fotos: fTexto,
+                                    descripcion: p.descripcion || ""
+                                };
+                            });
+
+                            // Enviar datos en bloque a Realtime Database
+                            await set(ref(rtdb, "config_bellezas"), {
+                                clave: claveRecuperada,
+                                tasa: 45.50,
+                                telefono: "584124111357",
+                                categorias: categoriasRecuperadas,
+                                productos: mapeoProductos
+                            });
+                            console.log("¡Mudanza automática completada con éxito!");
+                        }
+                    }
+                }, { onlyOnce: true });
+            } catch (e) {
+                console.log("Aviso de migración pasiva:", e.message);
+            }
+        }
+
+        // Ejecutar migración antes de escuchar los datos en vivo
+        ejecutarMigraciónAutomatica();
+
+        // ESCUCHA EN TIEMPO REAL DESDE REALTIME DATABASE BLINDADA
+        const tiendaRef = ref(rtdb, "config_bellezas");
+        onValue(tiendaRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                db.clave = data.clave || "1234";
+                db.tasa = parseFloat(data.tasa || 45.00);
+                db.telefono = data.telefono || "584124111357";
+                
+                // Procesar Categorías
+                if (data.categorias) {
+                    db.categorias = Array.isArray(data.categorias) ? data.categorias : Object.values(data.categorias);
+                } else {
+                    db.categorias = ["Todos"];
+                }
+                if (!db.categorias.includes("Todos")) {
+                    db.categorias.unshift("Todos");
+                }
+
+                // Procesar Productos (Convertir Objeto RTDB a Lista Indexable)
+                if (data.productos) {
+                    db.productos = Object.values(data.productos);
+                } else {
+                    db.productos = [];
+                }
+
+                // Actualizar interfaz
+                document.getElementById("tasa-texto").innerText = db.tasa.toFixed(2);
+                document.getElementById("tel-texto").innerText = "+" + db.telefono;
+                
+                renderCategoriasNav();
+                renderCatalogo();
+                actualizarPanelAdmin();
+
+                document.getElementById("cargando-pantalla").style.display = "none";
+                document.getElementById("catalogo-grid").style.display = "flex";
+            }
+        });
+
+        // RENDERIZAR MENÚ SUPERIOR
+        function renderCategoriasNav() {
+            const nav = document.getElementById('categorias-nav');
+            nav.innerHTML = "";
+            db.categorias.forEach(c => {
+                const activeClass = (c === categoriaSeleccionada) ? 'active' : '';
+                nav.innerHTML += `<button class="nav-btn ${activeClass}" onclick="seleccionarCategoriaNavegacion('${c}')">${c}</button>`;
+            });
+        }
+
+        // RENDERIZAR PRODUCTOS
+        function renderCatalogo() {
+            const grid = document.getElementById('catalogo-grid');
+            grid.innerHTML = "";
+
+            const filtrados = db.productos.filter(p => categoriaSeleccionada === "Todos" || p.categoria === categoriaSeleccionada);
+
+            if (filtrados.length === 0) {
+                grid.innerHTML = `<p style="text-align:center; padding:30px; font-size:13px; color:#999; font-weight:500;">No hay prendas disponibles en esta categoría por el momento.</p>`;
+                return;
+            }
+
+            filtrados.forEach(p => {
+                // Separar enlaces de fotos
+                const arrFotos = p.fotos ? p.fotos.split(',').map(f => f.trim()).filter(f => f !== "") : [];
+                if (arrFotos.length === 0) arrFotos.push("https://placehold.co/600x600?text=Bellezas");
+
+                let dotsHtml = "";
+                if (arrFotos.length > 1) {
+                    dotsHtml = `<div class="carousel-dots">`;
+                    arrFotos.forEach((_, idx) => {
+                        dotsHtml += `<div class="dot ${idx === 0 ? 'active' : ''}" id="dot-${p.id}-${idx}"></div>`;
+                    });
+                    dotsHtml += `</div>`;
+                }
+
+                // Tallas estáticas simuladas de forma elegante
+                const tallasDisponibles = ["S", "M", "L"];
+                let tallasHtml = `<div class="size-selector-area"><span class="size-label">Tallas disponibles:</span><div class="size-badges">`;
+                tallasDisponibles.forEach(t => {
+                    const selectedClass = (carrito[p.id] && carrito[p.id].talla === t) ? 'selected' : '';
+                    tallasHtml += `<div class="size-badge ${selectedClass}" onclick="seleccionarTallaProducto('${p.id}', '${t}')">${t}</div>`;
+                });
+                tallasHtml += `</div></div>`;
+
+                const bsPrice = (p.precioUsd * db.tasa).toFixed(2);
+
+                grid.innerHTML += `
+                    <div class="product-card">
+                        <div class="carousel-container" id="carousel-${p.id}" data-current="0" data-total="${arrFotos.length}">
+                            <div class="carousel-track" id="track-${p.id}" style="transform: translateX(0%);" 
+                                 ontouchstart="handleTouchStart(event)" ontouchmove="handleTouchMove(event, '${p.id}')" ontouchend="handleTouchEnd(event, '${p.id}')">
+                                ${arrFotos.map(f => `<div class="carousel-slide"><img src="${f}" onclick="abrirZoomFoto('${f}')" alt="${p.nombre}"></div>`).join('')}
+                            </div>
+                            ${dotsHtml}
+                        </div>
+                        <div class="product-info">
+                            <div class="product-title">${p.nombre}</div>
+                            <div class="product-desc">${p.descripcion || 'Sin descripción adicional disponible.'}</div>
+                            
+                            ${tallasHtml}
+
+                            <div class="price-row">
+                                <div>
+                                    <span class="price-usd">$${p.precioUsd.toFixed(2)}</span>
+                                    <span class="price-bs">Ref: ${bsPrice} Bs</span>
+                                </div>
+                                <button class="btn-add" onclick="agregarAlCarrito('${p.id}')">
+                                    <i class="fa-solid fa-bag-shopping"></i> Llevar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // CONFIGURAR INTERFAZ GLOBAL DEL PANEL ADMIN
+        function actualizarPanelAdmin() {
+            document.getElementById('tienda-telefono').value = db.telefono;
+            document.getElementById('tasa-dolar-input').value = db.tasa;
+            
+            const sel = document.getElementById('prod-categoria');
+            sel.innerHTML = "";
+            const catsFiltradasSinTodos = db.categorias.filter(c => c !== "Todos");
+            catsFiltradasSinTodos.forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
+
+            const lCat = document.getElementById('lista-categorias-admin');
+            lCat.innerHTML = "";
+            catsFiltradasSinTodos.forEach((c, i) => {
+                lCat.innerHTML += `<li><span>${c}</span><div class="actions-panel"><button class="btn-icon delete" onclick="eliminarCategoria(${i})"><i class="fa-solid fa-trash"></i></button></div></li>`;
+            });
+
+            const lProd = document.getElementById('lista-productos-admin');
+            lProd.innerHTML = "";
+            db.productos.forEach(p => {
+                lProd.innerHTML += `<li><span>[${p.categoria}] ${p.nombre} - $${p.precioUsd.toFixed(2)}</span><div class="actions-panel"><button class="btn-icon edit" onclick="activarEditarProd('${p.id}')"><i class="fa-solid fa-pen"></i></button><button class="btn-icon delete" onclick="eliminarProducto('${p.id}')"><i class="fa-solid fa-trash"></i></button></div></li>`;
+            });
+        }
+
+        // FUNCIONES DE CONTROL DE CARRUSEL TÁCTIL (SWIPE)
+        let startX = 0;
+        let currentTranslate = 0;
+        let isDragging = false;
+
+        window.handleTouchStart = function(e) {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+        };
+
+        window.handleTouchMove = function(e, id) {
+            if (!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            const diff = currentX - startX;
+            const container = document.getElementById(`carousel-${id}`);
+            const currentIdx = parseInt(container.getAttribute('data-current'));
+            const width = container.offsetWidth;
+            currentTranslate = (-currentIdx * width) + diff;
+            document.getElementById(`track-${id}`).style.transition = 'none';
+            document.getElementById(`track-${id}`).style.transform = `translateX(${currentTranslate}px)`;
+        };
+
+        window.handleTouchEnd = function(e, id) {
+            if (!isDragging) return;
+            isDragging = false;
+            const container = document.getElementById(`carousel-${id}`);
+            let currentIdx = parseInt(container.getAttribute('data-current'));
+            const total = parseInt(container.getAttribute('data-total'));
+            const width = container.offsetWidth;
+            const finalMove = (-currentIdx * width) - currentTranslate;
+
+            if (finalMove > 50 && currentIdx < total - 1) { currentIdx++; }
+            else if (finalMove < -50 && currentIdx > 0) { currentIdx--; }
+
+            container.setAttribute('data-current', currentIdx);
+            const track = document.getElementById(`track-${id}`);
+            track.style.transition = 'transform 0.3s ease-out';
+            track.style.transform = `translateX(${-currentIdx * 100}%)`;
+
+            // Actualizar dots
+            for (let i = 0; i < total; i++) {
+                const dot = document.getElementById(`dot-${id}-${i}`);
+                if (dot) dot.classList.toggle('active', i === currentIdx);
+            }
+        };
+
+        // ACCIONES DE NAVEGACIÓN Y CARRITO
+        window.seleccionarCategoriaNavegacion = function(cat) {
+            categoriaSeleccionada = cat;
+            renderCategoriasNav();
+            renderCatalogo();
+        };
+
+        window.seleccionarTallaProducto = function(id, talla) {
+            if (!carrito[id]) {
+                carrito[id] = { id: id, cantidad: 0, talla: talla };
+            } else {
+                carrito[id].talla = talla;
+            }
+            renderCatalogo();
+        };
+
+        window.agregarAlCarrito = function(id) {
+            if (!carrito[id]) {
+                carrito[id] = { id: id, cantidad: 1, talla: "M" }; // M por defecto
+            } else {
+                carrito[id].cantidad++;
+            }
+            renderCatalogo();
+            actualizarBarraCarrito();
+        };
+
+        function actualizarBarraCarrito() {
+            const bar = document.getElementById('cart-bar');
+            let totalItems = 0;
+            let montoTotal = 0;
+
+            Object.values(carrito).forEach(item => {
+                const p = db.productos.find(prod => prod.id == item.id);
+                if (p) {
+                    totalItems += item.cantidad;
+                    montoTotal += (p.precioUsd * item.cantidad);
+                }
+            });
+
+            if (totalItems > 0) {
+                document.getElementById('cart-count').innerText = `${totalItems} prenda(s) seleccionada(s)`;
+                document.getElementById('cart-total').innerText = `$${montoTotal.toFixed(2)}`;
+                bar.classList.add('active');
+            } else {
+                bar.classList.remove('active');
+            }
+        }
+
+        window.enviarPedidoWhatsApp = function() {
+            let totalUsd = 0;
+            let mensaje = `🛍️ *NUEVO PEDIDO - BELLEZAS*\n`;
+            mensaje += `=========================\n\n`;
+
+            Object.values(carrito).forEach(item => {
+                const p = db.productos.find(prod => prod.id == item.id);
+                if (p) {
+                    const subtotal = p.precioUsd * item.cantidad;
+                    totalUsd += subtotal;
+                    mensaje += `• *${p.nombre}* [Talla: ${item.talla}]\n`;
+                    mensaje += `  ${item.cantidad} x $${p.precioUsd.toFixed(2)} = *$${subtotal.toFixed(2)}*\n\n`;
+                }
+            });
+
+            const totalBs = totalUsd * db.tasa;
+            mensaje += `=========================\n`;
+            mensaje += `💵 *Total Divisas:* $${totalUsd.toFixed(2)}\n`;
+            mensaje += `📈 *Tasa:* ${db.tasa.toFixed(2)} Bs\n`;
+            mensaje += `🇻🇪 *Total en Bolívares:* ${totalBs.toFixed(2)} Bs\n\n`;
+            mensaje += `¡Hola! Me gustaría coordinar el pago y la entrega de este pedido. ✨`;
+
+            const linkWhatsApp = `https://api.whatsapp.com/send?phone=${db.telefono}&text=${encodeURIComponent(mensaje)}`;
+            window.open(linkWhatsApp, '_blank');
+            carrito = {};
+            actualizarBarraCarrito();
+            renderCatalogo();
+        };
+
+        // GESTIÓN DE LUPA
+        window.abrirZoomFoto = function(src) {
+            document.getElementById('zoom-img').src = src;
+            document.getElementById('zoom-overlay').style.display = 'flex';
+        };
+        window.cerrarZoomFoto = function() {
+            document.getElementById('zoom-overlay').style.display = 'none';
+        };
+
+        // PANEL DE ADMINISTRACIÓN (BACKEND PROTEGIDO)
+        window.solicitarAccesoAdmin = function() {
+            const intento = prompt("Ingrese la clave maestra de Bellezas:");
+            if (intento === db.clave) {
+                document.getElementById('admin-modal').style.display = 'flex';
+            } else if (intento !== null) {
+                alert("Código de seguridad incorrecto.");
+            }
+        };
+
+        window.cerrarAdmin = function() {
+            document.getElementById('admin-modal').style.display = 'none';
+            limpiarFormProducto();
+        };
+
+        window.guardarConfigBasica = async function() {
+            const nuevaTasa = parseFloat(document.getElementById('tasa-dolar-input').value);
+            const nuevoTel = document.getElementById('tienda-telefono').value.trim();
+            if (isNaN(nuevaTasa) || nuevoTel === "") return alert("Por favor complete los campos básicos.");
+            
+            await set(ref(rtdb, "config_bellezas/tasa"), nuevaTasa);
+            await set(ref(rtdb, "config_bellezas/telefono"), nuevoTel);
+            alert("Ajustes generales actualizados.");
+        };
+
+        window.agregarCategoria = async function() {
+            const input = document.getElementById('nueva-cat-input');
+            const nombre = input.value.trim();
+            if (nombre === "") return;
+            
+            const catsFiltradasSinTodos = db.categorias.filter(c => c !== "Todos");
+            catsFiltradasSinTodos.push(nombre);
+
+            await set(ref(rtdb, "config_bellezas/categorias"), catsFiltradasSinTodos);
+            input.value = "";
+            alert(`Categoría "${nombre}" agregada.`);
+        };
+
+        window.eliminarCategoria = async function(idxFiltrado) {
+            if (!confirm("¿Segura que deseas eliminar esta categoría? No borrará los artículos correspondientes.")) return;
+            const catsFiltradasSinTodos = db.categorias.filter(c => c !== "Todos");
+            catsFiltradasSinTodos.splice(idxFiltrado, 1);
+
+            await set(ref(rtdb, "config_bellezas/categorias"), catsFiltradasSinTodos);
+        };
+
+        window.procesarProducto = async function() {
+            const idEditado = document.getElementById('edit-prod-id').value;
+            const cat = document.getElementById('prod-categoria').value;
+            const nombre = document.getElementById('prod-nombre').value.trim();
+            const desc = document.getElementById('prod-desc').value.trim();
+            const precio = parseFloat(document.getElementById('prod-precio').value);
+            const fotos = document.getElementById('prod-fotos').value.trim();
+
+            if (!cat || !nombre || isNaN(precio) || !fotos) {
+                return alert("Por favor, llena los campos obligatorios (Categoría, Nombre, Precio y al menos 1 Foto).");
+            }
+
+            const idFinal = idEditado || "prod_" + Date.now();
+            const nuevoProdObj = {
+                id: idFinal,
+                categoria: cat,
+                nombre: nombre,
+                descripcion: desc,
+                precioUsd: precio,
+                fotos: fotos
+            };
+
+            await set(ref(rtdb, `config_bellezas/productos/${idFinal}`), nuevoProdObj);
+            alert(idEditado ? "Prenda modificada con éxito." : "Prenda subida exitosamente.");
+            limpiarFormProducto();
+        };
+
+        window.activarEditarProd = function(id) {
+            const p = db.productos.find(prod => prod.id == id);
+            if (!p) return;
+
+            document.getElementById('edit-prod-id').value = p.id;
+            document.getElementById('prod-categoria').value = p.categoria;
+            document.getElementById('prod-nombre').value = p.nombre;
+            document.getElementById('prod-desc').value = p.descripcion || "";
+            document.getElementById('prod-precio').value = p.precioUsd;
+            document.getElementById('prod-fotos').value = p.fotos || "";
+
+            document.getElementById('form-prod-title').innerText = "Editar Prenda Existente";
+            document.getElementById('btn-cancelar-edicion').style.display = "inline-block";
+        };
+
+        window.eliminarProducto = async function(id) {
+            if (!confirm("¿Está segura de que desea remover este artículo permanentemente del catálogo?")) return;
+            await set(ref(rtdb, `config_bellezas/productos/${id}`), null);
+            alert("Artículo eliminado.");
+        };
+
+        window.limpiarFormProducto = function() {
+            document.getElementById('edit-prod-id').value = "";
+            document.getElementById('prod-nombre').value = "";
+            document.getElementById('prod-desc').value = "";
+            document.getElementById('prod-precio').value = "";
+            document.getElementById('prod-fotos').value = "";
+            document.getElementById('form-prod-title').innerText = "Subir Nuevo Producto";
+            document.getElementById('btn-cancelar-edicion').style.display = "none";
+        };
+    </script>
+</body>
+</html>
