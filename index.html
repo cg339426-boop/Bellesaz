@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bellezas - Catálogo Premium</title>
+    <title>Bellezas - Catálogo Premium (Todos los Productos)</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -15,7 +15,8 @@
             --coral: #D94E6F;
             --text-dark: #2C2520;
             --white: #FFFFFF;
-            --gray-light: #EFECE3;
+            --gray-light: #EFECE3; /* Fondo tenue actual */
+            /* --gray-light: #FFFFFF; <--- Descomenta esto para fondo blanco puro */
         }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
         body { background-color: var(--bg-crema); color: var(--text-dark); display: flex; flex-direction: column; min-height: 100vh; padding-bottom: 70px; }
@@ -35,34 +36,16 @@
         .main-header p { color: var(--verde); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 3px; margin: 0; }
 
         .app-container { padding: 20px 15px; flex: 1; max-width: 600px; width: 100%; margin: 0 auto; }
-        
-        .back-header { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; animation: fadeIn 0.3s ease; }
-        .btn-back { background: none; border: none; color: var(--gold-dark); font-size: 13px; font-weight: 700; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
-        .category-title-view { font-size: 16px; font-weight: 600; color: var(--text-dark); text-transform: uppercase; letter-spacing: 1px; border-left: 2px solid var(--gold); padding-left: 10px; }
 
-        .search-box { background-color: var(--white); display: flex; align-items: center; padding: 12px 15px; border-radius: 25px; border: 1px solid var(--gold); margin-bottom: 20px; }
-        .search-box i { color: var(--gold); margin-right: 10px; }
-        .search-box input { border: none; outline: none; width: 100%; font-size: 15px; background: transparent; }
-
-        .categories-menu-vertical { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 15px 0; max-width: 340px; margin: 0 auto; width: 100%; }
-        .cat-btn-premium { 
-            background: linear-gradient(135deg, #FFFDF7 0%, #F5F1E3 100%); color: var(--text-dark); 
-            border: 2px solid var(--gold); padding: 18px 25px; border-radius: 14px; font-size: 13px; 
-            font-weight: 700; text-transform: uppercase; letter-spacing: 2.5px; cursor: pointer; 
-            width: 100%; text-align: center; display: flex; justify-content: center; align-items: center; gap: 10px;
-            box-shadow: 0 6px 15px rgba(197, 148, 78, 0.12); transition: all 0.2s ease;
-        }
-        .cat-btn-premium:active { transform: scale(0.97); }
-
-        /* RECUADROS MÁS GRANDES - MEJORA VISUAL */
+        /* PRODUCTOS PLANOS Y GRANDES */
         .products-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; animation: fadeIn 0.4s ease; }
         .product-card { background-color: var(--white); border-radius: 16px; overflow: hidden; border: 1px solid var(--gray-light); display: flex; flex-direction: column; box-shadow: 0 6px 12px rgba(0,0,0,0.03); }
         
-        .prod-img-box { position: relative; width: 100%; height: 210px; overflow: hidden; background-color: var(--gray-light); display: flex; align-items: center; justify-content: center; }
+        .prod-img-box { position: relative; width: 100%; height: 210px; /* Tamaño del recuadro visualmente grande */ overflow: hidden; background-color: var(--gray-light); display: flex; align-items: center; justify-content: center; }
         .carousel-track { display: flex; width: 100%; height: 100%; overflow-x: auto; scroll-snap-type: x mandatory; scroll-behavior: smooth; }
         .carousel-track::-webkit-scrollbar { display: none; }
         .carousel-slide { min-width: 100%; height: 100%; scroll-snap-align: start; display: flex; align-items: center; justify-content: center; }
-        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .carousel-slide img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; } /* Mantenemos object-fit: cover para que rellene */
         
         .carousel-dots { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 10; }
         .dot { width: 6px; height: 6px; background: rgba(255,255,255,0.5); border-radius: 50%; }
@@ -79,6 +62,7 @@
         .hidden { display: none !important; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* VISTA DE LA BOLSA DE COMPRAS */
         .cart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--gold); padding-bottom: 10px; color: var(--verde); }
         .cart-card { background-color: var(--white); padding: 15px; border-radius: 10px; border: 1px solid var(--gold); margin-bottom: 20px; }
         .cart-item { display: flex; gap: 10px; padding: 12px 0; border-bottom: 1px solid var(--gray-light); align-items: center; }
@@ -89,12 +73,14 @@
         .cart-item-details p { font-size: 11px; color: #777; }
         .cart-total-box { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px dashed var(--gold); font-weight: 700; font-size: 15px; }
         
+        /* NAVEGACIÓN INFERIOR */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background-color: var(--white); border-top: 1px solid var(--gray-light); display: flex; justify-content: space-around; align-items: center; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); z-index: 100; }
         .nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: #b5b0a1; font-size: 10px; font-weight: 600; gap: 4px; cursor: pointer; position: relative; }
         .nav-item.active { color: var(--gold); }
         .nav-item i { font-size: 18px; }
         .badge { position: absolute; top: -5px; right: -8px; background-color: var(--coral); color: var(--white); font-size: 9px; padding: 2px 6px; border-radius: 10px; font-weight: 700; }
         
+        /* MODALES */
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
         .modal-content { background: var(--white); padding: 20px; border-radius: 12px; width: 100%; max-width: 320px; text-align: center; border: 2px solid var(--gold); }
         .tallas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
@@ -121,29 +107,15 @@
     </header>
 
     <main class="app-container">
-        <!-- VISTA DEL CLIENTE -->
         <section id="vista-cliente">
-            <div id="loading-categorias" class="loading-overlay">
-                <i class="fa-solid fa-sync fa-spin"></i> Cargando colecciones...
+            <div id="loading-productos" class="loading-overlay">
+                <i class="fa-solid fa-sync fa-spin"></i> Cargando inventario...
             </div>
-            <div id="subvista-menu-categorias" class="categories-menu-vertical hidden"></div>
-
             <div id="subvista-productos" class="hidden">
-                <div class="back-header">
-                    <button class="btn-back" onclick="regresarAlMenuCategorias()">
-                        <i class="fa-solid fa-arrow-left"></i> Atrás
-                    </button>
-                    <span class="category-title-view" id="texto-categoria-actual">Categoría</span>
-                </div>
-                <div class="search-box">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" id="search-input" placeholder="Buscar en esta colección..." oninput="filtrarProductos()">
-                </div>
                 <div class="products-grid" id="products-container"></div>
             </div>
         </section>
 
-        <!-- VISTA DE LA BOLSA DE COMPRAS -->
         <section id="vista-carrito" class="hidden">
             <div class="cart-header">
                 <h2><i class="fa-solid fa-cart-shopping"></i> Mi Bolsa</h2>
@@ -161,7 +133,6 @@
         </section>
     </main>
 
-    <!-- MODAL SELECCIÓN DE TALLA -->
     <div id="modal-talla" class="modal hidden">
         <div class="modal-content">
             <h3>Selecciona la Talla</h3>
@@ -170,13 +141,11 @@
         </div>
     </div>
 
-    <!-- MODAL DE FOTO AMPLIADA -->
     <div id="modal-zoom-foto" class="modal-zoom" onclick="cerrarZoomFoto()">
         <button class="btn-close-zoom" onclick="cerrarZoomFoto()">&times;</button>
         <img id="img-ampliada" class="modal-zoom-content" src="" alt="Vista ampliada">
     </div>
 
-    <!-- NAVEGACIÓN INFERIOR -->
     <nav class="bottom-nav">
         <div id="nav-cliente" class="nav-item active" onclick="mostrarVista('cliente')">
             <i class="fa-solid fa-bag-shopping"></i><span>Catálogo</span>
@@ -188,14 +157,12 @@
     </nav>
     <script>
         // CONFIGURACIÓN DE CONEXIÓN CON GOOGLE SHEETS
-        // Reemplaza esto con el ID real de tu hoja de cálculo cuando la tengas lista
         const SHEET_ID = '1wvxg31YW9oorfYoXLlA4lccNlHHF-g0BHvK5hZ6ZIiI'; 
         
         let productosData = [];
         let carrito = [];
         let tasaCambio = 40.00; // Valor base por si acaso
         let telefonoWhatsApp = "584125555555"; // Valor base por si acaso
-        let categoriaSeleccionada = "";
         let productoEnSeleccion = null;
 
         // Carga inicial al abrir la página
@@ -205,7 +172,7 @@
 
         async function inicializarCatalogo() {
             if (SHEET_ID === 'TU_ID_DE_GOOGLE_SHEETS_AQUI') {
-                document.getElementById('loading-categorias').innerHTML = "⚠️ Falta configurar el ID de Google Sheets.";
+                document.getElementById('loading-productos').innerHTML = "⚠️ Falta configurar el ID de Google Sheets.";
                 return;
             }
             try {
@@ -221,12 +188,14 @@
                 const textProd = await resProd.text();
                 procesarProductos(textProd);
 
-                document.getElementById('loading-categorias').classList.add('hidden');
-                document.getElementById('subvista-menu-categorias').classList.remove('hidden');
-                generarMenuCategorias();
+                document.getElementById('loading-productos').classList.add('hidden');
+                document.getElementById('subvista-productos').classList.remove('hidden');
+                
+                // Cargar directamente todos los productos
+                renderizarProductos(productosData);
             } catch (error) {
                 console.error(error);
-                document.getElementById('loading-categorias').innerHTML = "❌ Error al conectar con el inventario.";
+                document.getElementById('loading-productos').innerHTML = "❌ Error al conectar con el inventario.";
             }
         }
 
@@ -259,45 +228,21 @@
             return JSON.parse(r[1]);
         }
 
-        function generarMenuCategorias() {
-            const categoriasUnicas = [...new Set(productosData.map(p => p.Categoria))].filter(Boolean);
-            const container = document.getElementById('subvista-menu-categorias');
-            container.innerHTML = "";
+        // Ya no necesitamos generar menú de categorías
+        // function generarMenuCategorias() { ... }
 
-            if (categoriasUnicas.length === 0) {
-                container.innerHTML = "<p class='empty-msg'>No hay mercancía disponible por el momento.</p>";
-                return;
-            }
+        // Ya no necesitamos ver categoría
+        // function verCategoria(cat) { ... }
 
-            categoriasUnicas.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = "cat-btn-premium";
-                btn.innerHTML = `${cat} <i class="fa-solid fa-chevron-right" style="font-size:10px; opacity:0.6;"></i>`;
-                btn.onclick = () => verCategoria(cat);
-                container.appendChild(btn);
-            });
-        }
-
-        function verCategoria(cat) {
-            categoriaSeleccionada = cat;
-            document.getElementById('subvista-menu-categorias').classList.add('hidden');
-            document.getElementById('subvista-productos').classList.remove('hidden');
-            document.getElementById('texto-categoria-actual').innerText = cat;
-            document.getElementById('search-input').value = "";
-            renderizarProductos(productosData.filter(p => p.Categoria === cat));
-        }
-
-        function regresarAlMenuCategorias() {
-            document.getElementById('subvista-productos').classList.add('hidden');
-            document.getElementById('subvista-menu-categorias').classList.remove('hidden');
-        }
+        // Ya no necesitamos regresar al menú
+        // function regresarAlMenuCategorias() { ... }
 
         function renderizarProductos(lista) {
             const container = document.getElementById('products-container');
             container.innerHTML = "";
 
             if (lista.length === 0) {
-                container.innerHTML = "<p class='empty-msg'>No se encontraron artículos.</p>";
+                container.innerHTML = "<p class='empty-msg'>No hay mercancía disponible por el momento.</p>";
                 return;
             }
 
@@ -356,11 +301,8 @@
             });
         }
 
-        function filtrarProductos() {
-            const term = document.getElementById('search-input').value.toLowerCase().trim();
-            const filtrados = productosData.filter(p => p.Categoria === categoriaSeleccionada && p.Titulo.toLowerCase().includes(term));
-            renderizarProductos(filtrados);
-        }
+        // Ya no necesitamos filtrar productos (se cargan todos)
+        // function filtrarProductos() { ... }
 
         function abrirModalTalla(producto) {
             productoEnSeleccion = producto;
